@@ -10,18 +10,31 @@ class Contact {
       .findOne({ _id: ObjectId(id) });
 
   // TODO: validate properties
+  // TODO: Better error handling
   static create = async (properties) => {
-    return await database().collection(this.collection).insertOne(properties);
+    const { insertedId } = await database()
+      .collection(this.collection)
+      .insertOne(properties);
+
+    return await this.find(insertedId);
   };
 
   // TODO: Make an instance function
   // TODO: Validate properties
-  static update = async (id, properties) =>
-    await database()
+  // TODO: Better error handling
+  static update = async (id, properties) => {
+    const { value } = await database()
       .collection(this.collection)
-      .updateOne({ _id: ObjectId(id) }, { $set: properties });
+      .findOneAndUpdate(
+        { _id: ObjectId(id) },
+        { $set: properties },
+        { returnDocument: "after" }
+      );
 
+    return value;
+  };
   // TODO: Make an instance method
+  // TODO: Better error Handling
   static destroy = async (id) =>
     await database()
       .collection(this.collection)
